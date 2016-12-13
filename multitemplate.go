@@ -2,7 +2,7 @@ package multitemplate
 
 import (
 	"html/template"
-
+	"path/filepath"
 	"gopkg.in/gin-gonic/gin.v1/render"
 )
 
@@ -22,6 +22,13 @@ func (r Render) Add(name string, tmpl *template.Template) {
 		panic("template name cannot be empty")
 	}
 	r[name] = tmpl
+}
+
+func (r Render) AddFromFilesFuncs(name string, funcMap template.FuncMap, files ...string) *template.Template {
+	tname := filepath.Base(files[0])
+	tmpl := template.Must(template.New(tname).Funcs(funcMap).ParseFiles(files...))
+	r.Add(name, tmpl)
+	return tmpl
 }
 
 func (r Render) AddFromFiles(name string, files ...string) *template.Template {
