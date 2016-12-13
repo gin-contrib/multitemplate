@@ -57,7 +57,7 @@ func main() {
 
 ### Advanced example
 
-[https://elithrar.github.io/article/approximating-html-template-inheritance/](https://elithrar.github.io/article/approximating-html-template-inheritance/)
+[Approximating html/template Inheritance](https://elithrar.github.io/article/approximating-html-template-inheritance/)
 
 ```go
 package main
