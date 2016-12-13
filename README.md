@@ -7,39 +7,55 @@
 
 This is a custom HTML render to support multi templates, ie. more than one `*template.Template`.
 
-# Simple example
+## Usage
+
+### Start using it
+
+Download and install it:
+
+```sh
+$ go get github.com/gin-contrib/multitemplate
+```
+
+Import it in your code:
+
+```go
+import "github.com/gin-contrib/multitemplate"
+```
+
+### Simple example
 
 ```go
 package main
 
 import (
-    "html/template"
+	"html/template"
 
-    "github.com/gin-gonic/gin"
-    "github.com/gin-contrib/multitemplate"
+	"github.com/gin-contrib/multitemplate"
+	"gopkg.in/gin-gonic/gin.v1"
 )
 
-func main() {
-    router := gin.Default()
-    router.HTMLRender = createMyRender()
-    router.GET("/", func(c *gin.Context) {
-        c.HTML(200, "index", data)
-    })
-    router.Run(":8080")
+func createMyRender() multitemplate.Render {
+	r := multitemplate.New()
+	r.AddFromFiles("index", "base.html", "base.html")
+	r.AddFromFiles("article", "base.html", "article.html")
+	r.AddFromFiles("login", "base.html", "login.html")
+	r.AddFromFiles("dashboard", "base.html", "dashboard.html")
+
+	return r
 }
 
-func createMyRender() multitemplate.Render {
-    r := multitemplate.New()
-    r.AddFromFiles("index", "base.html", "base.html")
-    r.AddFromFiles("article", "base.html", "article.html")
-    r.AddFromFiles("login", "base.html", "login.html")
-    r.AddFromFiles("dashboard", "base.html", "dashboard.html")
-
-    return r
+func main() {
+	router := gin.Default()
+	router.HTMLRender = createMyRender()
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(200, "index", data)
+	})
+	router.Run(":8080")
 }
 ```
 
-## Advanced example
+### Advanced example
 
 [https://elithrar.github.io/article/approximating-html-template-inheritance/](https://elithrar.github.io/article/approximating-html-template-inheritance/)
 
@@ -50,8 +66,8 @@ import (
 	"html/template"
 	"path/filepath"
 
-	"github.com/gin-gonic/contrib/renders/multitemplate"
-	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/multitemplate"
+	"gopkg.in/gin-gonic/gin.v1"
 )
 
 func main() {
