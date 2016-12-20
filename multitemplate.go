@@ -42,6 +42,13 @@ func (r *Render) AddFromString(name, templateString string) *template.Template {
 	return tmpl
 }
 
+func (r Render) AddFromFilesFuncs(name string, funcMap template.FuncMap, files ...string) *template.Template {
+	tname := filepath.Base(files[0])
+	tmpl := template.Must(template.New(tname).Funcs(funcMap).ParseFiles(files...))
+	r.Add(name, tmpl)
+	return tmpl
+}
+
 func (r Render) Instance(name string, data interface{}) render.Render {
 	return render.HTML{
 		Template: r[name],
