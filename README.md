@@ -25,22 +25,21 @@ import "github.com/gin-contrib/multitemplate"
 
 ### Simple example
 
+See [example/example.go](example/example.go)
+
 ```go
 package main
 
 import (
-	"html/template"
-
 	"github.com/gin-contrib/multitemplate"
+
 	"gopkg.in/gin-gonic/gin.v1"
 )
 
 func createMyRender() multitemplate.Render {
 	r := multitemplate.New()
-	r.AddFromFiles("index", "base.html", "base.html")
-	r.AddFromFiles("article", "base.html", "article.html")
-	r.AddFromFiles("login", "base.html", "login.html")
-	r.AddFromFiles("dashboard", "base.html", "dashboard.html")
+	r.AddFromFiles("index", "templates/base.html", "templates/base.html")
+	r.AddFromFiles("article", "templates/base.html", "templates/article.html")
 
 	return r
 }
@@ -49,7 +48,14 @@ func main() {
 	router := gin.Default()
 	router.HTMLRender = createMyRender()
 	router.GET("/", func(c *gin.Context) {
-		c.HTML(200, "index", data)
+		c.HTML(200, "index", gin.H{
+			"title": "Html5 Template Engine",
+		})
+	})
+	router.GET("/article", func(c *gin.Context) {
+		c.HTML(200, "index", gin.H{
+			"title": "Html5 Article Engine",
+		})
 	})
 	router.Run(":8080")
 }
