@@ -38,8 +38,8 @@ import (
 
 func createMyRender() multitemplate.Render {
 	r := multitemplate.New()
-	r.AddFromFiles("index", "templates/base.html", "templates/base.html")
-	r.AddFromFiles("article", "templates/base.html", "templates/article.html")
+	r.AddFromFiles("index", "templates/base.html", "templates/index.html")
+	r.AddFromFiles("article", "templates/base.html", "templates/index.html", "templates/article.html")
 
 	return r
 }
@@ -53,7 +53,7 @@ func main() {
 		})
 	})
 	router.GET("/article", func(c *gin.Context) {
-		c.HTML(200, "index", gin.H{
+		c.HTML(200, "article", gin.H{
 			"title": "Html5 Article Engine",
 		})
 	})
