@@ -2,6 +2,7 @@ package multitemplate
 
 import (
 	"html/template"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin/render"
 )
