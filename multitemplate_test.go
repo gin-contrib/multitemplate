@@ -18,7 +18,7 @@ func performRequest(r http.Handler, method, path string) *httptest.ResponseRecor
 
 func createMyRender() Render {
 	r := New()
-	r.AddFromFiles("index", "tests/base.html", "tests/base.html")
+	r.AddFromFiles("index", "tests/base.html")
 
 	return r
 }
