@@ -1,6 +1,7 @@
 package multitemplate
 
 import (
+	"html/template"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -35,6 +36,18 @@ func createFromString() Render {
 	r.AddFromString("index", "Welcome to {{ .name }} template")
 
 	return r
+}
+
+func TestMissingTemplateOrName(t *testing.T) {
+	r := New()
+	tmpl := template.Must(template.New("test").Parse("Welcome to {{ .name }} template"))
+	assert.Panics(t, func() {
+		r.Add("", tmpl)
+	}, "template name cannot be empty")
+
+	assert.Panics(t, func() {
+		r.Add("test", nil)
+	}, "template can not be nil")
 }
 
 func TestAddFromFiles(t *testing.T) {
