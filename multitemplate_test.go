@@ -18,7 +18,7 @@ func performRequest(r http.Handler, method, path string) *httptest.ResponseRecor
 
 func createMyRender() Render {
 	r := New()
-	r.AddFromFiles("index", "tests/base.html")
+	r.AddFromFiles("index", "tests/base.html", "tests/article.html")
 
 	return r
 }
@@ -34,5 +34,5 @@ func TestAddFromFiles(t *testing.T) {
 
 	w := performRequest(router, "GET", "/")
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "<p>Test Multiple Template</p>\n", w.Body.String())
+	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
 }
