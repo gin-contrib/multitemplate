@@ -38,7 +38,7 @@ func (r Render) AddFromGlob(name, glob string) *template.Template {
 }
 
 func (r *Render) AddFromString(name, templateString string) *template.Template {
-	tmpl := template.Must(template.New("").Parse(templateString))
+	tmpl := template.Must(template.New(name).Parse(templateString))
 	r.Add(name, tmpl)
 	return tmpl
 }

@@ -30,6 +30,13 @@ func createFromGlob() Render {
 	return r
 }
 
+func createFromString() Render {
+	r := New()
+	r.AddFromString("index", "Welcome to {{ .name }} template")
+
+	return r
+}
+
 func TestAddFromFiles(t *testing.T) {
 	router := gin.New()
 	router.HTMLRender = createFromFile()
@@ -56,4 +63,18 @@ func TestAddFromGlob(t *testing.T) {
 	w := performRequest(router, "GET", "/")
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is login template\n", w.Body.String())
+}
+
+func TestAddFromString(t *testing.T) {
+	router := gin.New()
+	router.HTMLRender = createFromString()
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(200, "index", gin.H{
+			"name": "index",
+		})
+	})
+
+	w := performRequest(router, "GET", "/")
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, "Welcome to index template", w.Body.String())
 }
