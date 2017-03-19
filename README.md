@@ -32,8 +32,7 @@ package main
 
 import (
 	"github.com/gin-contrib/multitemplate"
-
-	"gopkg.in/gin-gonic/gin.v1"
+	"github.com/gin-gonic/gin"
 )
 
 func createMyRender() multitemplate.Render {
@@ -73,7 +72,7 @@ import (
 	"path/filepath"
 
 	"github.com/gin-contrib/multitemplate"
-	"gopkg.in/gin-gonic/gin.v1"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
