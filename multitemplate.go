@@ -49,6 +49,18 @@ func (r *Render) AddFromString(name, templateString string) *template.Template {
 	return tmpl
 }
 
+// AddFromStringsFuncs supply add template from strings
+func (r *Render) AddFromStringsFuncs(name string, funcMap template.FuncMap, templateStrings ...string) *template.Template {
+	tmpl := template.New(name).Funcs(funcMap)
+
+	for _, ts := range templateStrings {
+		tmpl = template.Must(tmpl.Parse(ts))
+	}
+
+	r.Add(name, tmpl)
+	return tmpl
+}
+
 // AddFromFilesFuncs supply add template from file callback func
 func (r Render) AddFromFilesFuncs(name string, funcMap template.FuncMap, files ...string) *template.Template {
 	tname := filepath.Base(files[0])

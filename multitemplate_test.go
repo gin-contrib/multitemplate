@@ -38,6 +38,13 @@ func createFromString() Render {
 	return r
 }
 
+func createFromStringsWithFuncs() Render {
+	r := New()
+	r.AddFromStringsFuncs("index", template.FuncMap{}, `Welcome to {{ .name }} {{template "content"}}`, `{{define "content"}}template{{end}}`)
+
+	return r
+}
+
 func TestMissingTemplateOrName(t *testing.T) {
 	r := New()
 	tmpl := template.Must(template.New("test").Parse("Welcome to {{ .name }} template"))
@@ -81,6 +88,20 @@ func TestAddFromGlob(t *testing.T) {
 func TestAddFromString(t *testing.T) {
 	router := gin.New()
 	router.HTMLRender = createFromString()
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(200, "index", gin.H{
+			"name": "index",
+		})
+	})
+
+	w := performRequest(router, "GET", "/")
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, "Welcome to index template", w.Body.String())
+}
+
+func TestAddFromStringsFruncs(t *testing.T) {
+	router := gin.New()
+	router.HTMLRender = createFromStringsWithFuncs()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
 			"name": "index",
