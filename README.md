@@ -27,6 +27,7 @@ import "github.com/gin-contrib/multitemplate"
 
 See [example/example.go](example/example.go)
 
+[embedmd]:# (example/example.go go)
 ```go
 package main
 
@@ -39,7 +40,6 @@ func createMyRender() multitemplate.Render {
 	r := multitemplate.New()
 	r.AddFromFiles("index", "templates/base.html", "templates/index.html")
 	r.AddFromFiles("article", "templates/base.html", "templates/index.html", "templates/article.html")
-
 	return r
 }
 

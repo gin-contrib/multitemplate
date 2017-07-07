@@ -7,8 +7,15 @@ go:
   - 1.8.x
   - tip
 
+install:
+  - make install
+
 script:
-  - go test -v -covermode=atomic -coverprofile=coverage.out
+  - make vet
+  - make fmt-check
+  - make embedmd
+  - make misspell-check
+  - make test
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
