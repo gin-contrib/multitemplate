@@ -1,10 +1,12 @@
 package multitemplate
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -15,6 +17,11 @@ func performRequest(r http.Handler, method, path string) *httptest.ResponseRecor
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	return w
+}
+
+func formatAsDate(t time.Time) string {
+	year, month, day := t.Date()
+	return fmt.Sprintf("%d/%02d/%02d", year, month, day)
 }
 
 func createFromFile() Render {
@@ -41,6 +48,13 @@ func createFromString() Render {
 func createFromStringsWithFuncs() Render {
 	r := New()
 	r.AddFromStringsFuncs("index", template.FuncMap{}, `Welcome to {{ .name }} {{template "content"}}`, `{{define "content"}}template{{end}}`)
+
+	return r
+}
+
+func createFromFilesWithFuncs() Render {
+	r := New()
+	r.AddFromFilesFuncs("index", template.FuncMap{}, "tests/welcome.html", "tests/content.html")
 
 	return r
 }
@@ -111,4 +125,18 @@ func TestAddFromStringsFruncs(t *testing.T) {
 	w := performRequest(router, "GET", "/")
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "Welcome to index template", w.Body.String())
+}
+
+func TestAddFromFilesFruncs(t *testing.T) {
+	router := gin.New()
+	router.HTMLRender = createFromFilesWithFuncs()
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(200, "index", gin.H{
+			"name": "index",
+		})
+	})
+
+	w := performRequest(router, "GET", "/")
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, "Welcome to index template\n", w.Body.String())
 }
