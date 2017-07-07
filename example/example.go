@@ -9,10 +9,6 @@ func createMyRender() multitemplate.Render {
 	r := multitemplate.New()
 	r.AddFromFiles("index", "templates/base.html", "templates/index.html")
 	r.AddFromFiles("article", "templates/base.html", "templates/index.html", "templates/article.html")
-
-	// r.AddFromFiles("login", "base.html", "login.html")
-	// r.AddFromFiles("dashboard", "base.html", "dashboard.html")
-
 	return r
 }
 
