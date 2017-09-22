@@ -89,19 +89,19 @@ func main() {
 func loadTemplates(templatesDir string) multitemplate.Render {
 	r := multitemplate.New()
 
-	layouts, err := filepath.Glob(templatesDir + "layouts/*.tmpl")
+	layouts, err := filepath.Glob(templatesDir + "/layouts/*.tmpl")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	includes, err := filepath.Glob(templatesDir + "includes/*.tmpl")
+	includes, err := filepath.Glob(templatesDir + "/includes/*.tmpl")
 	if err != nil {
 		panic(err.Error())
 	}
 
 	// Generate our templates map from our layouts/ and includes/ directories
 	for _, layout := range layouts {
-		files := append(includes, layout)
+		files := append([]string{layout}, includes...)
 		r.Add(filepath.Base(layout), template.Must(template.ParseFiles(files...)))
 	}
 	return r
