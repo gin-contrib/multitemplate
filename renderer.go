@@ -3,7 +3,10 @@ package multitemplate
 import "html/template"
 import "github.com/gin-gonic/gin/render"
 
-// Renderer type
+// Renderer type is the Agnostic Renderer for multitemplates.
+// When gin is in debug mode then all multitemplates works with
+// hot reloading allowing you modify file templates and seeing changes instantly.
+// Renderer should be created using multitemplates.NewRederer() constructor.
 type Renderer interface {
 	render.HTMLRender
 	Add(name string, tmpl *template.Template)
