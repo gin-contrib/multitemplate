@@ -2,6 +2,7 @@ package multitemplate
 
 import (
 	"html/template"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
@@ -86,12 +87,14 @@ func (r DynamicRender) Add(name string, tmpl *template.Template) {
 		panic("template name cannot be empty")
 	}
 	builder := &templateBuilder{templateName: name, tmpl: tmpl}
+	builder.buildType = templateType
 	r[name] = builder
 }
 
 // AddFromFiles supply add template from files
 func (r DynamicRender) AddFromFiles(name string, files ...string) *template.Template {
 	builder := &templateBuilder{templateName: name, files: files}
+	builder.buildType = filesTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
 }
@@ -99,6 +102,7 @@ func (r DynamicRender) AddFromFiles(name string, files ...string) *template.Temp
 // AddFromGlob supply add template from global path
 func (r DynamicRender) AddFromGlob(name, glob string) *template.Template {
 	builder := &templateBuilder{templateName: name, glob: glob}
+	builder.buildType = globTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
 }
@@ -106,6 +110,7 @@ func (r DynamicRender) AddFromGlob(name, glob string) *template.Template {
 // AddFromString supply add template from strings
 func (r DynamicRender) AddFromString(name, templateString string) *template.Template {
 	builder := &templateBuilder{templateName: name, templateString: templateString}
+	builder.buildType = stringTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
 }
@@ -114,13 +119,16 @@ func (r DynamicRender) AddFromString(name, templateString string) *template.Temp
 func (r DynamicRender) AddFromStringsFuncs(name string, funcMap template.FuncMap, templateStrings ...string) *template.Template {
 	builder := &templateBuilder{templateName: name, funcMap: funcMap,
 		templateStrings: templateStrings}
+	builder.buildType = stringFuncTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
 }
 
 // AddFromFilesFuncs supply add template from file callback func
 func (r DynamicRender) AddFromFilesFuncs(name string, funcMap template.FuncMap, files ...string) *template.Template {
-	builder := &templateBuilder{templateName: name, funcMap: funcMap, files: files}
+	tname := filepath.Base(files[0])
+	builder := &templateBuilder{templateName: tname, funcMap: funcMap, files: files}
+	builder.buildType = filesFuncTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
 }
