@@ -20,9 +20,9 @@ func NewDynamic() DynamicRender {
 	return make(DynamicRender)
 }
 
-// NewMultitemplateRenderer allows create an agnostic multitemplate renderer
+// NewRenderer allows create an agnostic multitemplate renderer
 // depending on enabled gin mode
-func NewMultitemplateRenderer() Renderer {
+func NewRenderer() Renderer {
 	if gin.IsDebugging() {
 		return NewDynamic()
 	}
