@@ -1,6 +1,7 @@
 package multitemplate
 
 import (
+	"fmt"
 	"html/template"
 	"path/filepath"
 
@@ -135,8 +136,12 @@ func (r DynamicRender) AddFromFilesFuncs(name string, funcMap template.FuncMap, 
 
 // Instance supply render string
 func (r DynamicRender) Instance(name string, data interface{}) render.Render {
+	builder, ok := r[name]
+	if !ok {
+		panic(fmt.Sprintf("Dynamic template with name %s not found", name))
+	}
 	return render.HTML{
-		Template: r[name].buildTemplate(),
+		Template: builder.buildTemplate(),
 		Data:     data,
 	}
 }
