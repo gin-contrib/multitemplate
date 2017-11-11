@@ -10,7 +10,10 @@ import (
 // Render type
 type Render map[string]*template.Template
 
-var _ render.HTMLRender = Render{}
+var (
+	_ render.HTMLRender = Render{}
+	_ Renderer          = Render{}
+)
 
 // New instance
 func New() Render {
@@ -43,14 +46,14 @@ func (r Render) AddFromGlob(name, glob string) *template.Template {
 }
 
 // AddFromString supply add template from strings
-func (r *Render) AddFromString(name, templateString string) *template.Template {
+func (r Render) AddFromString(name, templateString string) *template.Template {
 	tmpl := template.Must(template.New(name).Parse(templateString))
 	r.Add(name, tmpl)
 	return tmpl
 }
 
 // AddFromStringsFuncs supply add template from strings
-func (r *Render) AddFromStringsFuncs(name string, funcMap template.FuncMap, templateStrings ...string) *template.Template {
+func (r Render) AddFromStringsFuncs(name string, funcMap template.FuncMap, templateStrings ...string) *template.Template {
 	tmpl := template.New(name).Funcs(funcMap)
 
 	for _, ts := range templateStrings {
