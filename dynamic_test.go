@@ -132,14 +132,6 @@ func TestAddFromFilesFruncsDynamic(t *testing.T) {
 	assert.Equal(t, "Welcome to index template\n", w.Body.String())
 }
 
-func TestTestingModeGin(t *testing.T) {
-	gin.SetMode("test")
-	debug := gin.IsDebugging()
-	if debug == true {
-		assert.Equal(t, false, debug)
-	}
-}
-
 func TestPanicInvalidTypeBuilder(t *testing.T) {
 	assert.Panics(t, func() {
 		var b = templateBuilder{}
