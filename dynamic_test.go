@@ -43,6 +43,13 @@ func createFromFilesWithFuncsDynamic() Renderer {
 	return r
 }
 
+func createFromTemplatesDynamic() Renderer {
+	tmpl := template.Must(template.New("test").Parse("Welcome to {{ .name }} template"))
+	r := NewRenderer()
+	r.Add("test", tmpl)
+	return r
+}
+
 func TestMissingTemplateOrNameDynamic(t *testing.T) {
 	r := NewRenderer()
 	tmpl := template.Must(template.New("test").Parse("Welcome to {{ .name }} template"))
@@ -123,4 +130,51 @@ func TestAddFromFilesFruncsDynamic(t *testing.T) {
 	w := performRequest(router, "GET", "/")
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "Welcome to index template\n", w.Body.String())
+}
+
+func TestTestingModeGin(t *testing.T) {
+	gin.SetMode("test")
+	debug := gin.IsDebugging()
+	if debug == true {
+		assert.Equal(t, false, debug)
+	}
+}
+
+func TestPanicInvalidTypeBuilder(t *testing.T) {
+	assert.Panics(t, func() {
+		var b = templateBuilder{}
+		b.buildType = 10
+		b.buildTemplate()
+	})
+}
+
+func TestTemplateNotFound(t *testing.T) {
+	r := make(DynamicRender)
+	r.AddFromString("index", "This is a test template")
+	assert.Panics(t, func() {
+		r.Instance("NotFoundTemplate", nil)
+	})
+}
+
+func TestNotDynamicMode(t *testing.T) {
+	gin.SetMode("test")
+	TestAddFromFilesDynamic(t)
+	gin.SetMode("debug")
+}
+
+func TestAddTemplate(t *testing.T) {
+	tmpl := template.Must(template.ParseFiles("tests/base.html", "tests/article.html"))
+	b := templateBuilder{}
+	b.buildType = templateType
+	b.tmpl = tmpl
+	tmpl = b.buildTemplate()
+	assert.NotPanics(t, func() {
+		b.buildTemplate()
+	})
+}
+
+func TestAddingTemplate(t *testing.T) {
+	assert.NotPanics(t, func() {
+		createFromTemplatesDynamic()
+	})
 }
