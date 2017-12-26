@@ -1,6 +1,7 @@
 package multitemplate
 
 import (
+	"fmt"
 	"html/template"
 	"path/filepath"
 
@@ -27,6 +28,9 @@ func (r Render) Add(name string, tmpl *template.Template) {
 	}
 	if len(name) == 0 {
 		panic("template name cannot be empty")
+	}
+	if _, ok := r[name]; ok {
+		panic(fmt.Sprintf("template %s already exists", name))
 	}
 	r[name] = tmpl
 }
