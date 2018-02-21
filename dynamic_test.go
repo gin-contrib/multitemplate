@@ -1,66 +1,57 @@
 package multitemplate
 
 import (
-	"fmt"
 	"html/template"
-	"net/http"
-	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
-func performRequest(r http.Handler, method, path string) *httptest.ResponseRecorder {
-	req, _ := http.NewRequest(method, path, nil)
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
-	return w
-}
-
-func formatAsDate(t time.Time) string {
-	year, month, day := t.Date()
-	return fmt.Sprintf("%d/%02d/%02d", year, month, day)
-}
-
-func createFromFile() Render {
-	r := New()
+func createFromFileDynamic() Renderer {
+	r := NewRenderer()
 	r.AddFromFiles("index", "tests/base.html", "tests/article.html")
 
 	return r
 }
 
-func createFromGlob() Render {
-	r := New()
+func createFromGlobDynamic() Renderer {
+	r := NewRenderer()
 	r.AddFromGlob("index", "tests/global/*")
 
 	return r
 }
 
-func createFromString() Render {
-	r := New()
+func createFromStringDynamic() Renderer {
+	r := NewRenderer()
 	r.AddFromString("index", "Welcome to {{ .name }} template")
 
 	return r
 }
 
-func createFromStringsWithFuncs() Render {
-	r := New()
+func createFromStringsWithFuncsDynamic() Renderer {
+	r := NewRenderer()
 	r.AddFromStringsFuncs("index", template.FuncMap{}, `Welcome to {{ .name }} {{template "content"}}`, `{{define "content"}}template{{end}}`)
 
 	return r
 }
 
-func createFromFilesWithFuncs() Render {
-	r := New()
+func createFromFilesWithFuncsDynamic() Renderer {
+	r := NewRenderer()
 	r.AddFromFilesFuncs("index", template.FuncMap{}, "tests/welcome.html", "tests/content.html")
 
 	return r
 }
 
-func TestMissingTemplateOrName(t *testing.T) {
-	r := New()
+func createFromTemplatesDynamic() Renderer {
+	tmpl := template.Must(template.New("test").Parse("Welcome to {{ .name }} template"))
+	r := NewRenderer()
+	r.Add("test", tmpl)
+	return r
+}
+
+func TestMissingTemplateOrNameDynamic(t *testing.T) {
+	r := NewRenderer()
 	tmpl := template.Must(template.New("test").Parse("Welcome to {{ .name }} template"))
 	assert.Panics(t, func() {
 		r.Add("", tmpl)
@@ -71,9 +62,9 @@ func TestMissingTemplateOrName(t *testing.T) {
 	}, "template can not be nil")
 }
 
-func TestAddFromFiles(t *testing.T) {
+func TestAddFromFilesDynamic(t *testing.T) {
 	router := gin.New()
-	router.HTMLRender = createFromFile()
+	router.HTMLRender = createFromFileDynamic()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
 			"title": "Test Multiple Template",
@@ -85,9 +76,9 @@ func TestAddFromFiles(t *testing.T) {
 	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
 }
 
-func TestAddFromGlob(t *testing.T) {
+func TestAddFromGlobDynamic(t *testing.T) {
 	router := gin.New()
-	router.HTMLRender = createFromGlob()
+	router.HTMLRender = createFromGlobDynamic()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
 			"title": "Test Multiple Template",
@@ -99,9 +90,9 @@ func TestAddFromGlob(t *testing.T) {
 	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is login template\n", w.Body.String())
 }
 
-func TestAddFromString(t *testing.T) {
+func TestAddFromStringDynamic(t *testing.T) {
 	router := gin.New()
-	router.HTMLRender = createFromString()
+	router.HTMLRender = createFromStringDynamic()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
 			"name": "index",
@@ -113,9 +104,9 @@ func TestAddFromString(t *testing.T) {
 	assert.Equal(t, "Welcome to index template", w.Body.String())
 }
 
-func TestAddFromStringsFruncs(t *testing.T) {
+func TestAddFromStringsFruncsDynamic(t *testing.T) {
 	router := gin.New()
-	router.HTMLRender = createFromStringsWithFuncs()
+	router.HTMLRender = createFromStringsWithFuncsDynamic()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
 			"name": "index",
@@ -127,9 +118,9 @@ func TestAddFromStringsFruncs(t *testing.T) {
 	assert.Equal(t, "Welcome to index template", w.Body.String())
 }
 
-func TestAddFromFilesFruncs(t *testing.T) {
+func TestAddFromFilesFruncsDynamic(t *testing.T) {
 	router := gin.New()
-	router.HTMLRender = createFromFilesWithFuncs()
+	router.HTMLRender = createFromFilesWithFuncsDynamic()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
 			"name": "index",
@@ -141,10 +132,41 @@ func TestAddFromFilesFruncs(t *testing.T) {
 	assert.Equal(t, "Welcome to index template\n", w.Body.String())
 }
 
-func TestDuplicateTemplate(t *testing.T) {
+func TestPanicInvalidTypeBuilder(t *testing.T) {
 	assert.Panics(t, func() {
-		r := New()
-		r.AddFromString("index", "Welcome to {{ .name }} template")
-		r.AddFromString("index", "Welcome to {{ .name }} template")
+		var b = templateBuilder{}
+		b.buildType = 10
+		b.buildTemplate()
+	})
+}
+
+func TestTemplateNotFound(t *testing.T) {
+	r := make(DynamicRender)
+	r.AddFromString("index", "This is a test template")
+	assert.Panics(t, func() {
+		r.Instance("NotFoundTemplate", nil)
+	})
+}
+
+func TestNotDynamicMode(t *testing.T) {
+	gin.SetMode("test")
+	TestAddFromFilesDynamic(t)
+	gin.SetMode("debug")
+}
+
+func TestAddTemplate(t *testing.T) {
+	tmpl := template.Must(template.ParseFiles("tests/base.html", "tests/article.html"))
+	b := templateBuilder{}
+	b.buildType = templateType
+	b.tmpl = tmpl
+	tmpl = b.buildTemplate()
+	assert.NotPanics(t, func() {
+		b.buildTemplate()
+	})
+}
+
+func TestAddingTemplate(t *testing.T) {
+	assert.NotPanics(t, func() {
+		createFromTemplatesDynamic()
 	})
 }
