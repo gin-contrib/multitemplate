@@ -113,4 +113,5 @@ func loadTemplates(templatesDir string) multitemplate.Renderer {
 		r.AddFromFiles(filepath.Base(include), files...)
 	}
 	return r
-}```
+}
+```
