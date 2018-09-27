@@ -109,7 +109,9 @@ func loadTemplates(templatesDir string) multitemplate.Renderer {
 
 	// Generate our templates map from our layouts/ and includes/ directories
 	for _, include := range includes {
-		files := append(layouts, include)
+		layoutCopy := make([]string, len(layouts))
+		copy(layoutCopy, layouts)
+		files := append(layoutCopy, include)
 		r.AddFromFiles(filepath.Base(include), files...)
 	}
 	return r
