@@ -81,5 +81,6 @@ func (r Render) Instance(name string, data interface{}) render.Render {
 	return render.HTML{
 		Template: r[name],
 		Data:     data,
+		Name:     name,
 	}
 }

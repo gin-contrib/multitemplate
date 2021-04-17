@@ -143,5 +143,6 @@ func (r DynamicRender) Instance(name string, data interface{}) render.Render {
 	return render.HTML{
 		Template: builder.buildTemplate(),
 		Data:     data,
+		Name:     name,
 	}
 }
