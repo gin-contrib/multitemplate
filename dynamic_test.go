@@ -134,7 +134,7 @@ func TestAddFromFilesFruncsDynamic(t *testing.T) {
 
 func TestPanicInvalidTypeBuilder(t *testing.T) {
 	assert.Panics(t, func() {
-		var b = templateBuilder{}
+		b := templateBuilder{}
 		b.buildType = 10
 		b.buildTemplate()
 	})
@@ -159,7 +159,7 @@ func TestAddTemplate(t *testing.T) {
 	b := templateBuilder{}
 	b.buildType = templateType
 	b.tmpl = tmpl
-	tmpl = b.buildTemplate()
+	b.buildTemplate()
 	assert.NotPanics(t, func() {
 		b.buildTemplate()
 	})

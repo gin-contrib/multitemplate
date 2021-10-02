@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"path/filepath"
 
 	"github.com/gin-contrib/multitemplate"
@@ -21,7 +22,9 @@ func main() {
 		})
 	})
 
-	router.Run(":8080")
+	if err := router.Run(":8080"); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func loadTemplates(templatesDir string) multitemplate.Renderer {

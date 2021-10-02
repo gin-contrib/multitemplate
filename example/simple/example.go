@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 )
@@ -25,5 +27,8 @@ func main() {
 			"title": "Html5 Article Engine",
 		})
 	})
-	router.Run(":8080")
+
+	if err := router.Run(":8080"); err != nil {
+		log.Fatal(err)
+	}
 }

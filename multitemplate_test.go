@@ -1,12 +1,10 @@
 package multitemplate
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -17,11 +15,6 @@ func performRequest(r http.Handler, method, path string) *httptest.ResponseRecor
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	return w
-}
-
-func formatAsDate(t time.Time) string {
-	year, month, day := t.Date()
-	return fmt.Sprintf("%d/%02d/%02d", year, month, day)
 }
 
 func createFromFile() Render {
