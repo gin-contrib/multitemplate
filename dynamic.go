@@ -118,8 +118,10 @@ func (r DynamicRender) AddFromString(name, templateString string) *template.Temp
 
 // AddFromStringsFuncs supply add template from strings
 func (r DynamicRender) AddFromStringsFuncs(name string, funcMap template.FuncMap, templateStrings ...string) *template.Template {
-	builder := &templateBuilder{templateName: name, funcMap: funcMap,
-		templateStrings: templateStrings}
+	builder := &templateBuilder{
+		templateName: name, funcMap: funcMap,
+		templateStrings: templateStrings,
+	}
 	builder.buildType = stringFuncTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
