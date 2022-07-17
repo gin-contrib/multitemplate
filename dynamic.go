@@ -54,26 +54,27 @@ type templateBuilder struct {
 	templateString  string
 	funcMap         template.FuncMap
 	templateStrings []string
+	options         TemplateOptions
 }
 
 func (tb templateBuilder) buildTemplate() *template.Template {
 	switch tb.buildType {
 	case templateType:
-		return tb.tmpl
+		return tb.tmpl.Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter)
 	case filesTemplateType:
-		return template.Must(template.ParseFiles(tb.files...))
+		return template.Must(template.ParseFiles(tb.files...)).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter)
 	case globTemplateType:
-		return template.Must(template.ParseGlob(tb.glob))
+		return template.Must(template.ParseGlob(tb.glob)).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter)
 	case stringTemplateType:
-		return template.Must(template.New(tb.templateName).Parse(tb.templateString))
+		return template.Must(template.New(tb.templateName).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter).Parse(tb.templateString))
 	case stringFuncTemplateType:
-		tmpl := template.New(tb.templateName).Funcs(tb.funcMap)
+		tmpl := template.New(tb.templateName).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter).Funcs(tb.funcMap)
 		for _, ts := range tb.templateStrings {
 			tmpl = template.Must(tmpl.Parse(ts))
 		}
 		return tmpl
 	case filesFuncTemplateType:
-		return template.Must(template.New(tb.templateName).Funcs(tb.funcMap).ParseFiles(tb.files...))
+		return template.Must(template.New(tb.templateName).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter).Funcs(tb.funcMap).ParseFiles(tb.files...))
 	default:
 		panic("Invalid builder type for dynamic template")
 	}
@@ -87,14 +88,14 @@ func (r DynamicRender) Add(name string, tmpl *template.Template) {
 	if len(name) == 0 {
 		panic("template name cannot be empty")
 	}
-	builder := &templateBuilder{templateName: name, tmpl: tmpl}
+	builder := &templateBuilder{templateName: name, tmpl: tmpl, options: *NewTemplateOptions()}
 	builder.buildType = templateType
 	r[name] = builder
 }
 
 // AddFromFiles supply add template from files
 func (r DynamicRender) AddFromFiles(name string, files ...string) *template.Template {
-	builder := &templateBuilder{templateName: name, files: files}
+	builder := &templateBuilder{templateName: name, files: files, options: *NewTemplateOptions()}
 	builder.buildType = filesTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
@@ -102,7 +103,7 @@ func (r DynamicRender) AddFromFiles(name string, files ...string) *template.Temp
 
 // AddFromGlob supply add template from global path
 func (r DynamicRender) AddFromGlob(name, glob string) *template.Template {
-	builder := &templateBuilder{templateName: name, glob: glob}
+	builder := &templateBuilder{templateName: name, glob: glob, options: *NewTemplateOptions()}
 	builder.buildType = globTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
@@ -110,7 +111,7 @@ func (r DynamicRender) AddFromGlob(name, glob string) *template.Template {
 
 // AddFromString supply add template from strings
 func (r DynamicRender) AddFromString(name, templateString string) *template.Template {
-	builder := &templateBuilder{templateName: name, templateString: templateString}
+	builder := &templateBuilder{templateName: name, templateString: templateString, options: *NewTemplateOptions()}
 	builder.buildType = stringTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
@@ -121,6 +122,19 @@ func (r DynamicRender) AddFromStringsFuncs(name string, funcMap template.FuncMap
 	builder := &templateBuilder{
 		templateName: name, funcMap: funcMap,
 		templateStrings: templateStrings,
+		options:         *NewTemplateOptions(),
+	}
+	builder.buildType = stringFuncTemplateType
+	r[name] = builder
+	return builder.buildTemplate()
+}
+
+// AddFromStringsFuncsWithOptions supply add template from strings with options
+func (r DynamicRender) AddFromStringsFuncsWithOptions(name string, funcMap template.FuncMap, options TemplateOptions, templateStrings ...string) *template.Template {
+	builder := &templateBuilder{
+		templateName: name, funcMap: funcMap,
+		templateStrings: templateStrings,
+		options:         options,
 	}
 	builder.buildType = stringFuncTemplateType
 	r[name] = builder
@@ -130,7 +144,16 @@ func (r DynamicRender) AddFromStringsFuncs(name string, funcMap template.FuncMap
 // AddFromFilesFuncs supply add template from file callback func
 func (r DynamicRender) AddFromFilesFuncs(name string, funcMap template.FuncMap, files ...string) *template.Template {
 	tname := filepath.Base(files[0])
-	builder := &templateBuilder{templateName: tname, funcMap: funcMap, files: files}
+	builder := &templateBuilder{templateName: tname, funcMap: funcMap, files: files, options: *NewTemplateOptions()}
+	builder.buildType = filesFuncTemplateType
+	r[name] = builder
+	return builder.buildTemplate()
+}
+
+// AddFromFilesFuncs supply add template from file callback func
+func (r DynamicRender) AddFromFilesFuncsWithOptions(name string, funcMap template.FuncMap, options TemplateOptions, files ...string) *template.Template {
+	tname := filepath.Base(files[0])
+	builder := &templateBuilder{templateName: tname, funcMap: funcMap, files: files, options: options}
 	builder.buildType = filesFuncTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
