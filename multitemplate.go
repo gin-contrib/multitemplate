@@ -3,6 +3,7 @@ package multitemplate
 import (
 	"fmt"
 	"html/template"
+	"io/fs"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin/render"
@@ -45,6 +46,13 @@ func (r Render) AddFromFiles(name string, files ...string) *template.Template {
 // AddFromGlob supply add template from global path
 func (r Render) AddFromGlob(name, glob string) *template.Template {
 	tmpl := template.Must(template.ParseGlob(glob))
+	r.Add(name, tmpl)
+	return tmpl
+}
+
+// AddFromFS supply add template from fs.FS (e.g. embed.FS)
+func (r Render) AddFromFS(name string, fsys fs.FS, files ...string) *template.Template {
+	tmpl := template.Must(template.ParseFS(fsys, files...))
 	r.Add(name, tmpl)
 	return tmpl
 }
