@@ -2,6 +2,7 @@ package multitemplate
 
 import (
 	"html/template"
+	"os"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -24,7 +25,7 @@ func createFromGlobDynamic() Renderer {
 
 func createFromFSDynamic() Render {
 	r := New()
-	r.AddFromFS("index", embedFS, "tests/base.html", "tests/article.html")
+	r.AddFromFS("index", os.DirFS("."), "tests/base.html", "tests/article.html")
 
 	return r
 }

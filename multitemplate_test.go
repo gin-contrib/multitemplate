@@ -2,18 +2,15 @@ package multitemplate
 
 import (
 	"context"
-	"embed"
 	"html/template"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
-
-//go:embed tests/*.html
-var embedFS embed.FS
 
 func performRequest(r http.Handler, method, path string) *httptest.ResponseRecorder {
 	req, _ := http.NewRequestWithContext(context.Background(), method, path, nil)
@@ -38,7 +35,7 @@ func createFromGlob() Render {
 
 func createFromFS() Render {
 	r := New()
-	r.AddFromFS("index", embedFS, "tests/base.html", "tests/article.html")
+	r.AddFromFS("index", os.DirFS("."), "tests/base.html", "tests/article.html")
 
 	return r
 }
