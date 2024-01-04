@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +29,13 @@ func createFromFile() Render {
 func createFromGlob() Render {
 	r := New()
 	r.AddFromGlob("index", "tests/global/*")
+
+	return r
+}
+
+func createFromFS() Render {
+	r := New()
+	r.AddFromFS("index", os.DirFS("."), "tests/base.html", "tests/article.html")
 
 	return r
 }
@@ -91,6 +99,20 @@ func TestAddFromGlob(t *testing.T) {
 	w := performRequest(router, "GET", "/")
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is login template\n", w.Body.String())
+}
+
+func TestAddFromFS(t *testing.T) {
+	router := gin.New()
+	router.HTMLRender = createFromFS()
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(200, "index", gin.H{
+			"title": "Test Multiple Template",
+		})
+	})
+
+	w := performRequest(router, "GET", "/")
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
 }
 
 func TestAddFromString(t *testing.T) {

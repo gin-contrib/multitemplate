@@ -2,6 +2,7 @@ package multitemplate
 
 import (
 	"html/template"
+	"os"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -18,6 +19,13 @@ func createFromFileDynamic() Renderer {
 func createFromGlobDynamic() Renderer {
 	r := NewRenderer()
 	r.AddFromGlob("index", "tests/global/*")
+
+	return r
+}
+
+func createFromFSDynamic() Render {
+	r := New()
+	r.AddFromFS("index", os.DirFS("."), "tests/base.html", "tests/article.html")
 
 	return r
 }
@@ -88,6 +96,20 @@ func TestAddFromGlobDynamic(t *testing.T) {
 	w := performRequest(router, "GET", "/")
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is login template\n", w.Body.String())
+}
+
+func TestAddFromFSDynamic(t *testing.T) {
+	router := gin.New()
+	router.HTMLRender = createFromFSDynamic()
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(200, "index", gin.H{
+			"title": "Test Multiple Template",
+		})
+	})
+
+	w := performRequest(router, "GET", "/")
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
 }
 
 func TestAddFromStringDynamic(t *testing.T) {
