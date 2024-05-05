@@ -3,6 +3,7 @@ package multitemplate
 import (
 	"html/template"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -81,7 +82,7 @@ func TestAddFromFilesDynamic(t *testing.T) {
 
 	w := performRequest(router, "GET", "/")
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
+	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", strings.ReplaceAll(w.Body.String(), "\r", ""))
 }
 
 func TestAddFromGlobDynamic(t *testing.T) {
@@ -95,7 +96,7 @@ func TestAddFromGlobDynamic(t *testing.T) {
 
 	w := performRequest(router, "GET", "/")
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is login template\n", w.Body.String())
+	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is login template\n", strings.ReplaceAll(w.Body.String(), "\r", ""))
 }
 
 func TestAddFromFSDynamic(t *testing.T) {
@@ -109,7 +110,7 @@ func TestAddFromFSDynamic(t *testing.T) {
 
 	w := performRequest(router, "GET", "/")
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
+	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", strings.ReplaceAll(w.Body.String(), "\r", ""))
 }
 
 func TestAddFromStringDynamic(t *testing.T) {
@@ -151,7 +152,7 @@ func TestAddFromFilesFruncsDynamic(t *testing.T) {
 
 	w := performRequest(router, "GET", "/")
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "Welcome to index template\n", w.Body.String())
+	assert.Equal(t, "Welcome to index template\n", strings.ReplaceAll(w.Body.String(), "\r", ""))
 }
 
 func TestPanicInvalidTypeBuilder(t *testing.T) {
