@@ -3,6 +3,7 @@ package multitemplate
 import (
 	"fmt"
 	"html/template"
+	"io/fs"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
@@ -39,6 +40,7 @@ const (
 	templateType builderType = iota
 	filesTemplateType
 	globTemplateType
+	fsTemplateType
 	stringTemplateType
 	stringFuncTemplateType
 	filesFuncTemplateType
@@ -51,6 +53,7 @@ type templateBuilder struct {
 	templateName    string
 	files           []string
 	glob            string
+	fsys            fs.FS
 	templateString  string
 	funcMap         template.FuncMap
 	templateStrings []string
@@ -65,6 +68,8 @@ func (tb templateBuilder) buildTemplate() *template.Template {
 		return template.Must(template.ParseFiles(tb.files...)).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter)
 	case globTemplateType:
 		return template.Must(template.ParseGlob(tb.glob)).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter)
+	case fsTemplateType:
+		return template.Must(template.ParseFS(tb.fsys, tb.files...)).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter)
 	case stringTemplateType:
 		return template.Must(template.New(tb.templateName).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter).Parse(tb.templateString))
 	case stringFuncTemplateType:
@@ -105,6 +110,13 @@ func (r DynamicRender) AddFromFiles(name string, files ...string) *template.Temp
 func (r DynamicRender) AddFromGlob(name, glob string) *template.Template {
 	builder := &templateBuilder{templateName: name, glob: glob, options: *NewTemplateOptions()}
 	builder.buildType = globTemplateType
+	r[name] = builder
+	return builder.buildTemplate()
+}
+
+func (r DynamicRender) AddFromFS(name string, fsys fs.FS, files ...string) *template.Template {
+	builder := &templateBuilder{templateName: name, fsys: fsys, files: files}
+	builder.buildType = fsTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
 }
