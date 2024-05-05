@@ -19,5 +19,7 @@ type Renderer interface {
 	AddFromFS(name string, fsys fs.FS, files ...string) *template.Template
 	AddFromString(name, templateString string) *template.Template
 	AddFromStringsFuncs(name string, funcMap template.FuncMap, templateStrings ...string) *template.Template
+	AddFromStringsFuncsWithOptions(name string, funcMap template.FuncMap, options TemplateOptions, templateStrings ...string) *template.Template
 	AddFromFilesFuncs(name string, funcMap template.FuncMap, files ...string) *template.Template
+	AddFromFilesFuncsWithOptions(name string, funcMap template.FuncMap, options TemplateOptions, files ...string) *template.Template
 }
