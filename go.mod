@@ -1,4 +1,4 @@
-module github.com/gin-contrib/multitemplate
+module github.com/YamiOdymel/multitemplate
 
 go 1.18
 
