@@ -12,8 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func performRequest(r http.Handler, method, path string) *httptest.ResponseRecorder {
-	req, _ := http.NewRequestWithContext(context.Background(), method, path, nil)
+func performRequest(r http.Handler) *httptest.ResponseRecorder {
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	return w
@@ -49,7 +49,11 @@ func createFromString() Render {
 
 func createFromStringsWithFuncs() Render {
 	r := New()
-	r.AddFromStringsFuncs("index", template.FuncMap{}, `Welcome to {{ .name }} {{template "content"}}`, `{{define "content"}}template{{end}}`)
+	r.AddFromStringsFuncs(
+		"index",
+		template.FuncMap{},
+		`Welcome to {{ .name }} {{template "content"}}`, `{{define "content"}}template{{end}}`,
+	)
 
 	return r
 }
@@ -82,7 +86,7 @@ func TestAddFromFiles(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router, "GET", "/")
+	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
 }
@@ -96,7 +100,7 @@ func TestAddFromGlob(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router, "GET", "/")
+	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is login template\n", w.Body.String())
 }
@@ -110,7 +114,7 @@ func TestAddFromFS(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router, "GET", "/")
+	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
 }
@@ -124,7 +128,7 @@ func TestAddFromString(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router, "GET", "/")
+	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "Welcome to index template", w.Body.String())
 }
@@ -138,7 +142,7 @@ func TestAddFromStringsFruncs(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router, "GET", "/")
+	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "Welcome to index template", w.Body.String())
 }
@@ -152,7 +156,7 @@ func TestAddFromFilesFruncs(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router, "GET", "/")
+	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "Welcome to index template\n", w.Body.String())
 }

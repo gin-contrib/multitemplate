@@ -65,7 +65,11 @@ func (r Render) AddFromString(name, templateString string) *template.Template {
 }
 
 // AddFromStringsFuncs supply add template from strings
-func (r Render) AddFromStringsFuncs(name string, funcMap template.FuncMap, templateStrings ...string) *template.Template {
+func (r Render) AddFromStringsFuncs(
+	name string,
+	funcMap template.FuncMap,
+	templateStrings ...string,
+) *template.Template {
 	tmpl := template.New(name).Funcs(funcMap)
 
 	for _, ts := range templateStrings {
