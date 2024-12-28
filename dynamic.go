@@ -41,6 +41,7 @@ const (
 	filesTemplateType
 	globTemplateType
 	fsTemplateType
+	fsFuncTemplateType
 	stringTemplateType
 	stringFuncTemplateType
 	filesFuncTemplateType
@@ -69,6 +70,8 @@ func (tb templateBuilder) buildTemplate() *template.Template {
 		return template.Must(template.ParseGlob(tb.glob))
 	case fsTemplateType:
 		return template.Must(template.ParseFS(tb.fsys, tb.files...))
+	case fsFuncTemplateType:
+		return template.Must(template.New(tb.templateName).Funcs(tb.funcMap).ParseFS(tb.fsys, tb.files...))
 	case stringTemplateType:
 		return template.Must(template.New(tb.templateName).Parse(tb.templateString))
 	case stringFuncTemplateType:
@@ -113,9 +116,19 @@ func (r DynamicRender) AddFromGlob(name, glob string) *template.Template {
 	return builder.buildTemplate()
 }
 
+// AddFromFS supply add template from fs.FS (e.g. embed.FS)
 func (r DynamicRender) AddFromFS(name string, fsys fs.FS, files ...string) *template.Template {
 	builder := &templateBuilder{templateName: name, fsys: fsys, files: files}
 	builder.buildType = fsTemplateType
+	r[name] = builder
+	return builder.buildTemplate()
+}
+
+// AddFromFSFuncs supply add template from fs.FS (e.g. embed.FS) with callback func
+func (r DynamicRender) AddFromFSFuncs(name string, funcMap template.FuncMap, fsys fs.FS, files ...string) *template.Template {
+	tname := filepath.Base(files[0])
+	builder := &templateBuilder{templateName: tname, funcMap: funcMap, fsys: fsys, files: files}
+	builder.buildType = fsFuncTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
 }
