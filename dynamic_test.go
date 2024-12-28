@@ -196,3 +196,24 @@ func TestAddingTemplate(t *testing.T) {
 		createFromTemplatesDynamic()
 	})
 }
+
+func createFromFSFuncsDynamic() Renderer {
+	r := NewRenderer()
+	r.AddFromFSFuncs("index", template.FuncMap{}, os.DirFS("."), "tests/base.html", "tests/article.html")
+
+	return r
+}
+
+func TestAddFromFSFuncsDynamic(t *testing.T) {
+	router := gin.New()
+	router.HTMLRender = createFromFSFuncsDynamic()
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(200, "index", gin.H{
+			"title": "Test Multiple Template",
+		})
+	})
+
+	w := performRequest(router)
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
+}
