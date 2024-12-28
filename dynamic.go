@@ -124,10 +124,30 @@ func (r DynamicRender) AddFromFS(name string, fsys fs.FS, files ...string) *temp
 	return builder.buildTemplate()
 }
 
-// AddFromFSFuncs supply add template from fs.FS (e.g. embed.FS) with callback func
-func (r DynamicRender) AddFromFSFuncs(name string, funcMap template.FuncMap, fsys fs.FS, files ...string) *template.Template {
+// AddFromFSFuncs adds a new template to the DynamicRender from the provided file system (fs.FS) and files.
+// It allows you to specify a custom function map (funcMap) to be used within the template.
+//
+// Parameters:
+//   - name: The name to associate with the template in the DynamicRender.
+//   - funcMap: A map of functions to be used within the template.
+//   - fsys: The file system (fs.FS) from which to read the template files.
+//   - files: A variadic list of file paths to be included in the template.
+//
+// Returns:
+//   - *template.Template: The constructed template.
+func (r DynamicRender) AddFromFSFuncs(
+	name string,
+	funcMap template.FuncMap,
+	fsys fs.FS,
+	files ...string,
+) *template.Template {
 	tname := filepath.Base(files[0])
-	builder := &templateBuilder{templateName: tname, funcMap: funcMap, fsys: fsys, files: files}
+	builder := &templateBuilder{
+		templateName: tname,
+		funcMap:      funcMap,
+		fsys:         fsys,
+		files:        files,
+	}
 	builder.buildType = fsFuncTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
