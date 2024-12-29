@@ -44,8 +44,8 @@ func loadTemplates(templatesDir string) multitemplate.Renderer {
 	for _, article := range articles {
 		layoutCopy := make([]string, len(articleLayouts))
 		copy(layoutCopy, articleLayouts)
-		files := append(layoutCopy, article)
-		r.AddFromFiles(filepath.Base(article), files...)
+		layoutCopy = append(layoutCopy, article)
+		r.AddFromFiles(filepath.Base(article), layoutCopy...)
 	}
 
 	adminLayouts, err := filepath.Glob(templatesDir + "/layouts/admin-base.html")
@@ -62,8 +62,8 @@ func loadTemplates(templatesDir string) multitemplate.Renderer {
 	for _, admin := range admins {
 		layoutCopy := make([]string, len(adminLayouts))
 		copy(layoutCopy, adminLayouts)
-		files := append(layoutCopy, admin)
-		r.AddFromFiles(filepath.Base(admin), files...)
+		layoutCopy = append(layoutCopy, admin)
+		r.AddFromFiles(filepath.Base(admin), layoutCopy...)
 	}
 	return r
 }

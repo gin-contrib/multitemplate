@@ -41,6 +41,7 @@ const (
 	filesTemplateType
 	globTemplateType
 	fsTemplateType
+	fsFuncTemplateType
 	stringTemplateType
 	stringFuncTemplateType
 	filesFuncTemplateType
@@ -70,6 +71,8 @@ func (tb templateBuilder) buildTemplate() *template.Template {
 		return template.Must(template.ParseGlob(tb.glob)).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter)
 	case fsTemplateType:
 		return template.Must(template.ParseFS(tb.fsys, tb.files...)).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter)
+	case fsFuncTemplateType:
+		return template.Must(template.New(tb.templateName).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter).Funcs(tb.funcMap).ParseFS(tb.fsys, tb.files...))
 	case stringTemplateType:
 		return template.Must(template.New(tb.templateName).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter).Parse(tb.templateString))
 	case stringFuncTemplateType:
@@ -114,9 +117,48 @@ func (r DynamicRender) AddFromGlob(name, glob string) *template.Template {
 	return builder.buildTemplate()
 }
 
+// AddFromFS adds a new template to the DynamicRender from the provided file system (fs.FS) and files.
+// It allows you to specify a custom function map (funcMap) to be used within the template.
+// The name parameter is used to associate the template with a key in the DynamicRender.
+// The files parameter is a variadic list of file paths to be included in the template.
+//   - name: The name to associate with the template in the DynamicRender.
+//   - fsys: The file system (fs.FS) from which to read the template files.
+//   - files: A variadic list of file paths to be included in the template.
+//
+// Returns:
+//   - *template.Template: The constructed template.
 func (r DynamicRender) AddFromFS(name string, fsys fs.FS, files ...string) *template.Template {
 	builder := &templateBuilder{templateName: name, fsys: fsys, files: files}
 	builder.buildType = fsTemplateType
+	r[name] = builder
+	return builder.buildTemplate()
+}
+
+// AddFromFSFuncs adds a new template to the DynamicRender from the provided file system (fs.FS) and files.
+// It allows you to specify a custom function map (funcMap) to be used within the template.
+//
+// Parameters:
+//   - name: The name to associate with the template in the DynamicRender.
+//   - funcMap: A map of functions to be used within the template.
+//   - fsys: The file system (fs.FS) from which to read the template files.
+//   - files: A variadic list of file paths to be included in the template.
+//
+// Returns:
+//   - *template.Template: The constructed template.
+func (r DynamicRender) AddFromFSFuncs(
+	name string,
+	funcMap template.FuncMap,
+	fsys fs.FS,
+	files ...string,
+) *template.Template {
+	tname := filepath.Base(files[0])
+	builder := &templateBuilder{
+		templateName: tname,
+		funcMap:      funcMap,
+		fsys:         fsys,
+		files:        files,
+	}
+	builder.buildType = fsFuncTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
 }
@@ -130,7 +172,11 @@ func (r DynamicRender) AddFromString(name, templateString string) *template.Temp
 }
 
 // AddFromStringsFuncs supply add template from strings
-func (r DynamicRender) AddFromStringsFuncs(name string, funcMap template.FuncMap, templateStrings ...string) *template.Template {
+func (r DynamicRender) AddFromStringsFuncs(
+	name string,
+	funcMap template.FuncMap,
+	templateStrings ...string,
+) *template.Template {
 	builder := &templateBuilder{
 		templateName: name, funcMap: funcMap,
 		templateStrings: templateStrings,

@@ -39,7 +39,11 @@ func createFromStringDynamic() Renderer {
 
 func createFromStringsWithFuncsDynamic() Renderer {
 	r := NewRenderer()
-	r.AddFromStringsFuncs("index", template.FuncMap{}, `Welcome to {{ .name }} {{template "content"}}`, `{{define "content"}}template{{end}}`)
+	r.AddFromStringsFuncs(
+		"index",
+		template.FuncMap{},
+		`Welcome to {{ .name }} {{template "content"}}`, `{{define "content"}}template{{end}}`,
+	)
 
 	return r
 }
@@ -79,7 +83,7 @@ func TestAddFromFilesDynamic(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router, "GET", "/")
+	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
 }
@@ -93,7 +97,7 @@ func TestAddFromGlobDynamic(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router, "GET", "/")
+	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is login template\n", w.Body.String())
 }
@@ -107,7 +111,7 @@ func TestAddFromFSDynamic(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router, "GET", "/")
+	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
 }
@@ -121,7 +125,7 @@ func TestAddFromStringDynamic(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router, "GET", "/")
+	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "Welcome to index template", w.Body.String())
 }
@@ -135,7 +139,7 @@ func TestAddFromStringsFruncsDynamic(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router, "GET", "/")
+	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "Welcome to index template", w.Body.String())
 }
@@ -149,7 +153,7 @@ func TestAddFromFilesFruncsDynamic(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router, "GET", "/")
+	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "Welcome to index template\n", w.Body.String())
 }
@@ -191,4 +195,25 @@ func TestAddingTemplate(t *testing.T) {
 	assert.NotPanics(t, func() {
 		createFromTemplatesDynamic()
 	})
+}
+
+func createFromFSFuncsDynamic() Renderer {
+	r := NewRenderer()
+	r.AddFromFSFuncs("index", template.FuncMap{}, os.DirFS("."), "tests/base.html", "tests/article.html")
+
+	return r
+}
+
+func TestAddFromFSFuncsDynamic(t *testing.T) {
+	router := gin.New()
+	router.HTMLRender = createFromFSFuncsDynamic()
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(200, "index", gin.H{
+			"title": "Test Multiple Template",
+		})
+	})
+
+	w := performRequest(router)
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
 }
