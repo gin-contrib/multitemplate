@@ -11,6 +11,49 @@ import (
 
 // Render type
 type Render map[string]*template.Template
+type TemplateOptions struct {
+	LeftDelimiter  string
+	RightDelimiter string
+}
+
+type TemplateOption func(*TemplateOptions)
+
+func WithLeftDelimiter(delim string) TemplateOption {
+	return func(t *TemplateOptions) {
+		t.LeftDelimiter = delim
+	}
+}
+
+func WithRightDelimiter(delim string) TemplateOption {
+	return func(t *TemplateOptions) {
+		t.RightDelimiter = delim
+	}
+}
+
+func Delims(leftDelim, rightDelim string) TemplateOption {
+	return func(t *TemplateOptions) {
+		WithLeftDelimiter(leftDelim)(t)
+		WithRightDelimiter(rightDelim)(t)
+	}
+}
+
+func NewTemplateOptions(opts ...TemplateOption) *TemplateOptions {
+	const (
+		defaultLeftDelim  = "{{"
+		defaultRightDelim = "}}"
+	)
+
+	t := &TemplateOptions{
+		LeftDelimiter:  defaultLeftDelim,
+		RightDelimiter: defaultRightDelim,
+	}
+
+	for _, opt := range opts {
+		opt(t)
+	}
+
+	return t
+}
 
 var (
 	_ render.HTMLRender = Render{}
@@ -88,10 +131,30 @@ func (r Render) AddFromStringsFuncs(
 	return tmpl
 }
 
+// AddFromStringsFuncsWithOptions supply add template from strings with options
+func (r Render) AddFromStringsFuncsWithOptions(name string, funcMap template.FuncMap, options TemplateOptions, templateStrings ...string) *template.Template {
+	tmpl := template.New(name).Delims(options.LeftDelimiter, options.RightDelimiter).Funcs(funcMap)
+
+	for _, ts := range templateStrings {
+		tmpl = template.Must(tmpl.Parse(ts)).Delims(options.LeftDelimiter, options.RightDelimiter)
+	}
+
+	r.Add(name, tmpl)
+	return tmpl
+}
+
 // AddFromFilesFuncs supply add template from file callback func
 func (r Render) AddFromFilesFuncs(name string, funcMap template.FuncMap, files ...string) *template.Template {
 	tname := filepath.Base(files[0])
 	tmpl := template.Must(template.New(tname).Funcs(funcMap).ParseFiles(files...))
+	r.Add(name, tmpl)
+	return tmpl
+}
+
+// AddFromFilesFuncsWithOptions supply add template from file callback func with options
+func (r Render) AddFromFilesFuncsWithOptions(name string, funcMap template.FuncMap, options TemplateOptions, files ...string) *template.Template {
+	tname := filepath.Base(files[0])
+	tmpl := template.Must(template.New(tname).Delims(options.LeftDelimiter, options.RightDelimiter).Funcs(funcMap).ParseFiles(files...))
 	r.Add(name, tmpl)
 	return tmpl
 }
