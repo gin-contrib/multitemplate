@@ -66,23 +66,36 @@ func (tb templateBuilder) buildTemplate() *template.Template {
 	case templateType:
 		return tb.tmpl.Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter)
 	case filesTemplateType:
-		return template.Must(template.ParseFiles(tb.files...)).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter)
+		tmpl := template.Must(template.ParseFiles(tb.files...))
+		return tmpl.Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter)
 	case globTemplateType:
-		return template.Must(template.ParseGlob(tb.glob)).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter)
+		tmpl := template.Must(template.ParseGlob(tb.glob))
+		return tmpl.Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter)
 	case fsTemplateType:
-		return template.Must(template.ParseFS(tb.fsys, tb.files...)).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter)
+		tmpl := template.Must(template.ParseFS(tb.fsys, tb.files...))
+		return tmpl.Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter)
 	case fsFuncTemplateType:
-		return template.Must(template.New(tb.templateName).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter).Funcs(tb.funcMap).ParseFS(tb.fsys, tb.files...))
+		tmpl := template.New(tb.templateName).
+			Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter).
+			Funcs(tb.funcMap)
+		return template.Must(tmpl.ParseFS(tb.fsys, tb.files...))
 	case stringTemplateType:
-		return template.Must(template.New(tb.templateName).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter).Parse(tb.templateString))
+		tmpl := template.New(tb.templateName).
+			Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter)
+		return template.Must(tmpl.Parse(tb.templateString))
 	case stringFuncTemplateType:
-		tmpl := template.New(tb.templateName).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter).Funcs(tb.funcMap)
+		tmpl := template.New(tb.templateName).
+			Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter).
+			Funcs(tb.funcMap)
 		for _, ts := range tb.templateStrings {
 			tmpl = template.Must(tmpl.Parse(ts))
 		}
 		return tmpl
 	case filesFuncTemplateType:
-		return template.Must(template.New(tb.templateName).Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter).Funcs(tb.funcMap).ParseFiles(tb.files...))
+		tmpl := template.New(tb.templateName).
+			Delims(tb.options.LeftDelimiter, tb.options.RightDelimiter).
+			Funcs(tb.funcMap)
+		return template.Must(tmpl.ParseFiles(tb.files...))
 	default:
 		panic("Invalid builder type for dynamic template")
 	}
@@ -188,9 +201,15 @@ func (r DynamicRender) AddFromStringsFuncs(
 }
 
 // AddFromStringsFuncsWithOptions supply add template from strings with options
-func (r DynamicRender) AddFromStringsFuncsWithOptions(name string, funcMap template.FuncMap, options TemplateOptions, templateStrings ...string) *template.Template {
+func (r DynamicRender) AddFromStringsFuncsWithOptions(
+	name string,
+	funcMap template.FuncMap,
+	options TemplateOptions,
+	templateStrings ...string,
+) *template.Template {
 	builder := &templateBuilder{
-		templateName: name, funcMap: funcMap,
+		templateName:    name,
+		funcMap:         funcMap,
 		templateStrings: templateStrings,
 		options:         options,
 	}
@@ -209,9 +228,19 @@ func (r DynamicRender) AddFromFilesFuncs(name string, funcMap template.FuncMap, 
 }
 
 // AddFromFilesFuncs supply add template from file callback func
-func (r DynamicRender) AddFromFilesFuncsWithOptions(name string, funcMap template.FuncMap, options TemplateOptions, files ...string) *template.Template {
+func (r DynamicRender) AddFromFilesFuncsWithOptions(
+	name string,
+	funcMap template.FuncMap,
+	options TemplateOptions,
+	files ...string,
+) *template.Template {
 	tname := filepath.Base(files[0])
-	builder := &templateBuilder{templateName: tname, funcMap: funcMap, files: files, options: options}
+	builder := &templateBuilder{
+		templateName: tname,
+		funcMap:      funcMap,
+		files:        files,
+		options:      options,
+	}
 	builder.buildType = filesFuncTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
