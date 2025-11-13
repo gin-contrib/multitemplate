@@ -116,3 +116,36 @@ func loadTemplates(templatesDir string) multitemplate.Renderer {
   return r
 }
 ```
+
+### Partial render
+
+Allows rendering a specific template/block defined in a file with `template#block` syntax.
+
+See [example/partial/example.go](example/partial/example.go), [htmx ~ Template Fragments](https://htmx.org/essays/template-fragments/)
+
+```go
+func main() {
+	router := gin.Default()
+	router.HTMLRender = createMyRender()
+
+	// Route to render full template
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(200, "index", gin.H{
+			"items": []gin.H{
+				{"name": "Apple"},
+				{"name": "Banana"},
+				{"name": "Cherry"},
+			},
+		})
+	})
+
+	// Route to render partial template using "index#item" syntax
+	router.GET("/item", func(c *gin.Context) {
+		c.HTML(200, "index#item", gin.H{
+			"name": "Watermelon",
+		})
+	})
+
+	router.Run(":8080")
+}
+```

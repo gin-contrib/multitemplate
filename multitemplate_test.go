@@ -65,6 +65,13 @@ func createFromFilesWithFuncs() Render {
 	return r
 }
 
+func createFromPartial() Render {
+	r := New()
+	r.AddFromFiles("index", "tests/partial/base.html")
+
+	return r
+}
+
 func TestMissingTemplateOrName(t *testing.T) {
 	r := New()
 	tmpl := template.Must(template.New("test").Parse("Welcome to {{ .name }} template"))
@@ -167,4 +174,18 @@ func TestDuplicateTemplate(t *testing.T) {
 		r.AddFromString("index", "Welcome to {{ .name }} template")
 		r.AddFromString("index", "Welcome to {{ .name }} template")
 	})
+}
+
+func TestPartial(t *testing.T) {
+	router := gin.New()
+	router.HTMLRender = createFromPartial()
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(200, "index#item", gin.H{
+			"name": "apple",
+		})
+	})
+
+	w := performRequest(router)
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, "<li>apple</li>", w.Body.String())
 }
