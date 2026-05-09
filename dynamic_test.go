@@ -79,7 +79,7 @@ func TestAddFromFilesDynamic(t *testing.T) {
 	router.HTMLRender = createFromFileDynamic()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
-			"title": "Test Multiple Template",
+			"title": testTemplateTitle,
 		})
 	})
 
@@ -93,7 +93,7 @@ func TestAddFromGlobDynamic(t *testing.T) {
 	router.HTMLRender = createFromGlobDynamic()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
-			"title": "Test Multiple Template",
+			"title": testTemplateTitle,
 		})
 	})
 
@@ -107,7 +107,7 @@ func TestAddFromFSDynamic(t *testing.T) {
 	router.HTMLRender = createFromFSDynamic()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
-			"title": "Test Multiple Template",
+			"title": testTemplateTitle,
 		})
 	})
 
@@ -121,7 +121,7 @@ func TestAddFromStringDynamic(t *testing.T) {
 	router.HTMLRender = createFromStringDynamic()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
-			"name": "index",
+			"name": testTemplateName,
 		})
 	})
 
@@ -135,7 +135,7 @@ func TestAddFromStringsFruncsDynamic(t *testing.T) {
 	router.HTMLRender = createFromStringsWithFuncsDynamic()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
-			"name": "index",
+			"name": testTemplateName,
 		})
 	})
 
@@ -149,7 +149,7 @@ func TestAddFromFilesFruncsDynamic(t *testing.T) {
 	router.HTMLRender = createFromFilesWithFuncsDynamic()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
-			"name": "index",
+			"name": testTemplateName,
 		})
 	})
 
@@ -209,7 +209,7 @@ func TestAddFromFSFuncsDynamic(t *testing.T) {
 	router.HTMLRender = createFromFSFuncsDynamic()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
-			"title": "Test Multiple Template",
+			"title": testTemplateTitle,
 		})
 	})
 

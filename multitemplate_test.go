@@ -12,6 +12,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	testTemplateTitle = "Test Multiple Template"
+	testTemplateName  = "index"
+)
+
 func performRequest(r http.Handler) *httptest.ResponseRecorder {
 	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	w := httptest.NewRecorder()
@@ -82,7 +87,7 @@ func TestAddFromFiles(t *testing.T) {
 	router.HTMLRender = createFromFile()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
-			"title": "Test Multiple Template",
+			"title": testTemplateTitle,
 		})
 	})
 
@@ -96,7 +101,7 @@ func TestAddFromGlob(t *testing.T) {
 	router.HTMLRender = createFromGlob()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
-			"title": "Test Multiple Template",
+			"title": testTemplateTitle,
 		})
 	})
 
@@ -110,7 +115,7 @@ func TestAddFromFS(t *testing.T) {
 	router.HTMLRender = createFromFS()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
-			"title": "Test Multiple Template",
+			"title": testTemplateTitle,
 		})
 	})
 
@@ -124,7 +129,7 @@ func TestAddFromString(t *testing.T) {
 	router.HTMLRender = createFromString()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
-			"name": "index",
+			"name": testTemplateName,
 		})
 	})
 
@@ -138,7 +143,7 @@ func TestAddFromStringsFruncs(t *testing.T) {
 	router.HTMLRender = createFromStringsWithFuncs()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
-			"name": "index",
+			"name": testTemplateName,
 		})
 	})
 
@@ -152,7 +157,7 @@ func TestAddFromFilesFruncs(t *testing.T) {
 	router.HTMLRender = createFromFilesWithFuncs()
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index", gin.H{
-			"name": "index",
+			"name": testTemplateName,
 		})
 	})
 
