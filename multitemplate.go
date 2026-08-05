@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"io/fs"
 	"path/filepath"
+	"strings"
 
 	"github.com/gin-gonic/gin/render"
 )
@@ -182,8 +183,19 @@ func (r Render) AddFromFilesFuncsWithOptions(
 
 // Instance supply render string
 func (r Render) Instance(name string, data interface{}) render.Render {
+	tmplName, partialName := parseTemplateName(name)
 	return render.HTML{
-		Template: r[name],
+		Template: r[tmplName],
+		Name:     partialName,
 		Data:     data,
 	}
+}
+
+// parseTemplateName parses a template name that may contain a partial reference
+// in the format "template#partial" and returns the template name and partial name
+func parseTemplateName(name string) (templateName, partialName string) {
+	if idx := strings.Index(name, "#"); idx > 0 {
+		return name[:idx], name[idx+1:]
+	}
+	return name, ""
 }
