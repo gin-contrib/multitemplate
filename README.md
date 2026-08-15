@@ -3,7 +3,7 @@
 [![Run Tests](https://github.com/gin-contrib/multitemplate/actions/workflows/go.yml/badge.svg)](https://github.com/gin-contrib/multitemplate/actions/workflows/go.yml)
 [![Trivy Security Scan](https://github.com/gin-contrib/multitemplate/actions/workflows/trivy-scan.yml/badge.svg)](https://github.com/gin-contrib/multitemplate/actions/workflows/trivy-scan.yml)
 [![codecov](https://codecov.io/gh/gin-contrib/multitemplate/branch/master/graph/badge.svg)](https://codecov.io/gh/gin-contrib/multitemplate)
-[![GoDoc](https://godoc.org/github.com/gin-contrib/multitemplate?status.svg)](https://godoc.org/github.com/gin-contrib/multitemplate)
+[![Go Reference](https://pkg.go.dev/badge/github.com/gin-contrib/multitemplate.svg)](https://pkg.go.dev/github.com/gin-contrib/multitemplate)
 
 This is a custom HTML render to support multi templates, ie. more than one `*template.Template`.
 
