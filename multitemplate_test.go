@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -93,7 +94,7 @@ func TestAddFromFiles(t *testing.T) {
 
 	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
+	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", strings.ReplaceAll(w.Body.String(), "\r", ""))
 }
 
 func TestAddFromGlob(t *testing.T) {
@@ -107,7 +108,7 @@ func TestAddFromGlob(t *testing.T) {
 
 	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is login template\n", w.Body.String())
+	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is login template\n", strings.ReplaceAll(w.Body.String(), "\r", ""))
 }
 
 func TestAddFromFS(t *testing.T) {
@@ -121,7 +122,7 @@ func TestAddFromFS(t *testing.T) {
 
 	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
+	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", strings.ReplaceAll(w.Body.String(), "\r", ""))
 }
 
 func TestAddFromString(t *testing.T) {
@@ -163,7 +164,7 @@ func TestAddFromFilesFruncs(t *testing.T) {
 
 	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "Welcome to index template\n", w.Body.String())
+	assert.Equal(t, "Welcome to index template\n", strings.ReplaceAll(w.Body.String(), "\r", ""))
 }
 
 func TestDuplicateTemplate(t *testing.T) {
