@@ -248,12 +248,14 @@ func (r DynamicRender) AddFromFilesFuncsWithOptions(
 
 // Instance supply render string
 func (r DynamicRender) Instance(name string, data interface{}) render.Render {
-	builder, ok := r[name]
+	tmplName, partialName := parseTemplateName(name)
+	builder, ok := r[tmplName]
 	if !ok {
-		panic(fmt.Sprintf("Dynamic template with name %s not found", name))
+		panic(fmt.Sprintf("Dynamic template with name %s not found", tmplName))
 	}
 	return render.HTML{
 		Template: builder.buildTemplate(),
+		Name:     partialName,
 		Data:     data,
 	}
 }
