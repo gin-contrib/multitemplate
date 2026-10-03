@@ -18,7 +18,7 @@ const (
 )
 
 func performRequest(r http.Handler) *httptest.ResponseRecorder {
-	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "/", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	return w
@@ -93,7 +93,11 @@ func TestAddFromFiles(t *testing.T) {
 
 	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
+	assert.Equal(
+		t,
+		"<p>Test Multiple Template</p>\nHi, this is article template\n",
+		w.Body.String(),
+	)
 }
 
 func TestAddFromGlob(t *testing.T) {
@@ -121,7 +125,11 @@ func TestAddFromFS(t *testing.T) {
 
 	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
+	assert.Equal(
+		t,
+		"<p>Test Multiple Template</p>\nHi, this is article template\n",
+		w.Body.String(),
+	)
 }
 
 func TestAddFromString(t *testing.T) {

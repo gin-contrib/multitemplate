@@ -178,7 +178,11 @@ func (r DynamicRender) AddFromFSFuncs(
 
 // AddFromString supply add template from strings
 func (r DynamicRender) AddFromString(name, templateString string) *template.Template {
-	builder := &templateBuilder{templateName: name, templateString: templateString, options: *NewTemplateOptions()}
+	builder := &templateBuilder{
+		templateName:   name,
+		templateString: templateString,
+		options:        *NewTemplateOptions(),
+	}
 	builder.buildType = stringTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
@@ -219,9 +223,18 @@ func (r DynamicRender) AddFromStringsFuncsWithOptions(
 }
 
 // AddFromFilesFuncs supply add template from file callback func
-func (r DynamicRender) AddFromFilesFuncs(name string, funcMap template.FuncMap, files ...string) *template.Template {
+func (r DynamicRender) AddFromFilesFuncs(
+	name string,
+	funcMap template.FuncMap,
+	files ...string,
+) *template.Template {
 	tname := filepath.Base(files[0])
-	builder := &templateBuilder{templateName: tname, funcMap: funcMap, files: files, options: *NewTemplateOptions()}
+	builder := &templateBuilder{
+		templateName: tname,
+		funcMap:      funcMap,
+		files:        files,
+		options:      *NewTemplateOptions(),
+	}
 	builder.buildType = filesFuncTemplateType
 	r[name] = builder
 	return builder.buildTemplate()
@@ -247,7 +260,7 @@ func (r DynamicRender) AddFromFilesFuncsWithOptions(
 }
 
 // Instance supply render string
-func (r DynamicRender) Instance(name string, data interface{}) render.Render {
+func (r DynamicRender) Instance(name string, data any) render.Render {
 	builder, ok := r[name]
 	if !ok {
 		panic(fmt.Sprintf("Dynamic template with name %s not found", name))
