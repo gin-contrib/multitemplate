@@ -103,7 +103,12 @@ func (r Render) AddFromFS(name string, fsys fs.FS, files ...string) *template.Te
 }
 
 // AddFromFSFuncs supply add template from fs.FS (e.g. embed.FS) with callback func
-func (r Render) AddFromFSFuncs(name string, funcMap template.FuncMap, fsys fs.FS, files ...string) *template.Template {
+func (r Render) AddFromFSFuncs(
+	name string,
+	funcMap template.FuncMap,
+	fsys fs.FS,
+	files ...string,
+) *template.Template {
 	tname := filepath.Base(files[0])
 	tmpl := template.Must(template.New(tname).Funcs(funcMap).ParseFS(fsys, files...))
 	r.Add(name, tmpl)
@@ -155,7 +160,11 @@ func (r Render) AddFromStringsFuncsWithOptions(
 }
 
 // AddFromFilesFuncs supply add template from file callback func
-func (r Render) AddFromFilesFuncs(name string, funcMap template.FuncMap, files ...string) *template.Template {
+func (r Render) AddFromFilesFuncs(
+	name string,
+	funcMap template.FuncMap,
+	files ...string,
+) *template.Template {
 	tname := filepath.Base(files[0])
 	tmpl := template.Must(template.New(tname).Funcs(funcMap).ParseFiles(files...))
 	r.Add(name, tmpl)
@@ -181,7 +190,7 @@ func (r Render) AddFromFilesFuncsWithOptions(
 }
 
 // Instance supply render string
-func (r Render) Instance(name string, data interface{}) render.Render {
+func (r Render) Instance(name string, data any) render.Render {
 	return render.HTML{
 		Template: r[name],
 		Data:     data,

@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/gin-contrib/multitemplate"
+
 	"github.com/gin-gonic/gin"
 )
 

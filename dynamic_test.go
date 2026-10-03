@@ -85,7 +85,11 @@ func TestAddFromFilesDynamic(t *testing.T) {
 
 	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
+	assert.Equal(
+		t,
+		"<p>Test Multiple Template</p>\nHi, this is article template\n",
+		w.Body.String(),
+	)
 }
 
 func TestAddFromGlobDynamic(t *testing.T) {
@@ -113,7 +117,11 @@ func TestAddFromFSDynamic(t *testing.T) {
 
 	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
+	assert.Equal(
+		t,
+		"<p>Test Multiple Template</p>\nHi, this is article template\n",
+		w.Body.String(),
+	)
 }
 
 func TestAddFromStringDynamic(t *testing.T) {
@@ -199,7 +207,13 @@ func TestAddingTemplate(t *testing.T) {
 
 func createFromFSFuncsDynamic() Renderer {
 	r := NewRenderer()
-	r.AddFromFSFuncs("index", template.FuncMap{}, os.DirFS("."), "tests/base.html", "tests/article.html")
+	r.AddFromFSFuncs(
+		"index",
+		template.FuncMap{},
+		os.DirFS("."),
+		"tests/base.html",
+		"tests/article.html",
+	)
 
 	return r
 }
@@ -215,5 +229,9 @@ func TestAddFromFSFuncsDynamic(t *testing.T) {
 
 	w := performRequest(router)
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is article template\n", w.Body.String())
+	assert.Equal(
+		t,
+		"<p>Test Multiple Template</p>\nHi, this is article template\n",
+		w.Body.String(),
+	)
 }
