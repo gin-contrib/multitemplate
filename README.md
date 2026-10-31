@@ -1,6 +1,6 @@
 # Multitemplate
 
-[![Run Tests](https://github.com/gin-contrib/multitemplate/actions/workflows/go.yml/badge.svg)](https://github.com/gin-contrib/multitemplate/actions/workflows/go.yml)
+[![Lint and Testing](https://github.com/gin-contrib/multitemplate/actions/workflows/testing.yml/badge.svg)](https://github.com/gin-contrib/multitemplate/actions/workflows/testing.yml)
 [![Trivy Security Scan](https://github.com/gin-contrib/multitemplate/actions/workflows/trivy-scan.yml/badge.svg)](https://github.com/gin-contrib/multitemplate/actions/workflows/trivy-scan.yml)
 [![codecov](https://codecov.io/gh/gin-contrib/multitemplate/branch/master/graph/badge.svg)](https://codecov.io/gh/gin-contrib/multitemplate)
 [![Go Reference](https://pkg.go.dev/badge/github.com/gin-contrib/multitemplate.svg)](https://pkg.go.dev/github.com/gin-contrib/multitemplate)
