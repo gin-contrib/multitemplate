@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"path/filepath"
+	"slices"
 
 	"github.com/gin-contrib/multitemplate"
 
@@ -43,8 +44,7 @@ func loadTemplates(templatesDir string) multitemplate.Renderer {
 
 	// Generate our templates map from our layouts/ and includes/ directories
 	for _, include := range includes {
-		layoutCopy := make([]string, len(layouts))
-		copy(layoutCopy, layouts)
+		layoutCopy := slices.Clone(layouts)
 		layoutCopy = append(layoutCopy, include)
 		r.AddFromFiles(filepath.Base(include), layoutCopy...)
 	}

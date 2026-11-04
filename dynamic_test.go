@@ -83,7 +83,7 @@ func TestAddFromFilesDynamic(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router)
+	w := performRequest(t, router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(
 		t,
@@ -101,7 +101,7 @@ func TestAddFromGlobDynamic(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router)
+	w := performRequest(t, router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is login template\n", w.Body.String())
 }
@@ -115,7 +115,7 @@ func TestAddFromFSDynamic(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router)
+	w := performRequest(t, router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(
 		t,
@@ -133,7 +133,7 @@ func TestAddFromStringDynamic(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router)
+	w := performRequest(t, router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "Welcome to index template", w.Body.String())
 }
@@ -147,7 +147,7 @@ func TestAddFromStringsFruncsDynamic(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router)
+	w := performRequest(t, router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "Welcome to index template", w.Body.String())
 }
@@ -161,7 +161,7 @@ func TestAddFromFilesFruncsDynamic(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router)
+	w := performRequest(t, router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "Welcome to index template\n", w.Body.String())
 }
@@ -227,7 +227,7 @@ func TestAddFromFSFuncsDynamic(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router)
+	w := performRequest(t, router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(
 		t,

@@ -1,7 +1,6 @@
 package multitemplate
 
 import (
-	"context"
 	"html/template"
 	"net/http"
 	"net/http/httptest"
@@ -17,8 +16,8 @@ const (
 	testTemplateName  = "index"
 )
 
-func performRequest(r http.Handler) *httptest.ResponseRecorder {
-	req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "/", nil)
+func performRequest(t testing.TB, r http.Handler) *httptest.ResponseRecorder {
+	req, _ := http.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	return w
@@ -91,7 +90,7 @@ func TestAddFromFiles(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router)
+	w := performRequest(t, router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(
 		t,
@@ -109,7 +108,7 @@ func TestAddFromGlob(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router)
+	w := performRequest(t, router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "<p>Test Multiple Template</p>\nHi, this is login template\n", w.Body.String())
 }
@@ -123,7 +122,7 @@ func TestAddFromFS(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router)
+	w := performRequest(t, router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(
 		t,
@@ -141,7 +140,7 @@ func TestAddFromString(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router)
+	w := performRequest(t, router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "Welcome to index template", w.Body.String())
 }
@@ -155,7 +154,7 @@ func TestAddFromStringsFruncs(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router)
+	w := performRequest(t, router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "Welcome to index template", w.Body.String())
 }
@@ -169,7 +168,7 @@ func TestAddFromFilesFruncs(t *testing.T) {
 		})
 	})
 
-	w := performRequest(router)
+	w := performRequest(t, router)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "Welcome to index template\n", w.Body.String())
 }
